@@ -15,29 +15,31 @@ case "$-" in
 *i*)    INTERACTIVE=1;;
 esac
 
-if [ -n $INTERACTIVE ]
-then
+#TODO: Don't think I want this anymore....
+#if [ -n $INTERACTIVE ]
+#then
 
   #Start ssh agent if we don't already have one
   # pgrep -u $USER ssh-agent >/dev/null
   # if [ $? -ne 0 ]
   # then
-    source ~/bin/.start-agent.sh
+    # source ~/bin/.start-agent.sh
     # ssh-add
   # fi
-fi
+#fi
 
+# Try to switch to zsh
+if [ -f "/bin/zsh" ]; then
+  /bin/zsh
+  exit
+else
 
+  # if running bash
+  if [ -n "$BASH_VERSION" ]; then
+      # include .bashrc if it exists
+      if [ -f "$HOME/.bashrc" ]; then
+        . "$HOME/.bashrc"
+      fi
+  fi
 
-# if running bash
-if [ -n "$BASH_VERSION" ]; then
-    # include .bashrc if it exists
-    if [ -f "$HOME/.bashrc" ]; then
-	. "$HOME/.bashrc"
-    fi
-fi
-
-# set PATH so it includes user's private bin if it exists
-if [ -d "$HOME/bin" ] ; then
-    PATH="$HOME/bin:$PATH"
 fi

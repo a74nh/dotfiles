@@ -14,9 +14,7 @@ do
      esac
 done
 shift $(($OPTIND - 1))
-
-
-REMOTEMACHINE=${1:?$0 [-p port] <remotemachine>}
+REMOTEMACHINE=${1:?$USAGE}
 
 
 SCPSTUFF=(.ssh)
@@ -32,11 +30,18 @@ scp -rq $PORT ${SCPSTUFF[@]} $REMOTEMACHINE:
 #   rsync -zavhq --delete bin $REMOTEMACHINE:
 # done
 
-if [[ -n $NEW ]]; then
+remote()
+{
+  echo $@
+  ssh $REMOTEMACHINE $@
+}
 
-  ssh $REMOTEMACHINE git clone --recurse-submodules https://github.com/a74nh/dotfiles.git
+DOTFILES=.dotfiles
+if [[ -n $NEW ]]; then
+  remote rm -fr $DOTFILES
+  remote git clone --recurse-submodules https://github.com/a74nh/dotfiles.git $DOTFILES
 else
-  ssh $REMOTEMACHINE "cd dotfiles; git pull"
+  remote "cd $DOTFILES; git pull"
 fi
 
-  ssh $REMOTEMACHINE "cd dotfiles; ./install"
+remote "cd $DOTFILES; ./install"
