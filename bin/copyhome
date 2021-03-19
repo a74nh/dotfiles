@@ -1,12 +1,14 @@
 #!/bin/bash
 set -e
 
-USAGE="$0 [-p port] <remotemachine>"
+USAGE="$0 [-p port] [-n] <remotemachine>"
 PORT=
+NEW=
 
-while getopts p: line
+while getopts np: line
 do
      case $line in
+     n) NEW=1;;
      p) PORT="-P $OPTARG";;
      *) echo $USAGE; exit 2;;
      esac
@@ -17,16 +19,24 @@ shift $(($OPTIND - 1))
 REMOTEMACHINE=${1:?$0 [-p port] <remotemachine>}
 
 
-SCPSTUFF=(.ssh .zshrc .bashrc .bash_aliases .profile .gitconfig .gdbinit .tmux.conf .p10k.zsh)
-RSYNCSTUFF=(bin)
-
+SCPSTUFF=(.ssh)
 cd
 echo ${SCPSTUFF[@]}
 scp -rq $PORT ${SCPSTUFF[@]} $REMOTEMACHINE:
 
 
-for f in ${RSYNCSTUFF[@]}
-do
-  echo $f
-  rsync -zavhq --delete bin $REMOTEMACHINE:
-done
+# RSYNCSTUFF=(bin)
+# for f in ${RSYNCSTUFF[@]}
+# do
+#   echo $f
+#   rsync -zavhq --delete bin $REMOTEMACHINE:
+# done
+
+if [[ -n $NEW ]]; then
+
+  ssh $REMOTEMACHINE git clone --recurse-submodules https://github.com/a74nh/dotfiles.git
+else
+  ssh $REMOTEMACHINE "cd dotfiles; git pull"
+fi
+
+  ssh $REMOTEMACHINE "cd dotfiles; ./install"
