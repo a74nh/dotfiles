@@ -1,0 +1,27 @@
+- clean: ['~']
+
+- git:
+    ~/.oh-my-zsh:
+        url: 'https://github.com/ohmyzsh/ohmyzsh'
+        description: 'oh my zsh'
+    ~/.oh-my-zsh/custom/themes/powerlevel10k:
+        url: 'https://github.com/romkatv/powerlevel10k.git'
+        description: 'oh my zsh - powerlevel10k'
+
+- link:
+    ~/.profile: profile
+    ~/.bashrc: bashrc
+    ~/.bash_aliases: bash_aliases
+    ~/.gitconfig: gitconfig
+    ~/.ssh/config:
+        path: ssh/config
+        create: true
+    ~/.tmux.conf: tmux.conf
+    ~/.zshrc: zshrc
+    ~/bin:
+        path: bin/
+        create: true
+    ~/.p10k.zsh: p10k.zsh
+    ~/.gdbinit: gdbinit
+
+

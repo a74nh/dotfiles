@@ -1,0 +1,32 @@
+#!/bin/bash
+set -e
+
+USAGE="$0 [-p port] <remotemachine>"
+PORT=
+
+while getopts p: line
+do
+     case $line in
+     p) PORT="-P $OPTARG";;
+     *) echo $USAGE; exit 2;;
+     esac
+done
+shift $(($OPTIND - 1))
+
+
+REMOTEMACHINE=${1:?$0 [-p port] <remotemachine>}
+
+
+SCPSTUFF=(.ssh .zshrc .bashrc .bash_aliases .profile .gitconfig .gdbinit .tmux.conf .p10k.zsh)
+RSYNCSTUFF=(bin)
+
+cd
+echo ${SCPSTUFF[@]}
+scp -rq $PORT ${SCPSTUFF[@]} $REMOTEMACHINE:
+
+
+for f in ${RSYNCSTUFF[@]}
+do
+  echo $f
+  rsync -zavhq --delete bin $REMOTEMACHINE:
+done

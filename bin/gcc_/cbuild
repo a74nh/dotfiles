@@ -1,0 +1,19 @@
+#!/bin/bash
+
+sub_usage()
+{
+  echo "$@ args"
+}
+
+source ~/bin/acommon
+
+ARGS=$@
+#ARGS=${ARGS#*-fdiagnostics-color=never}
+ARGS=${ARGS%^M}
+
+
+ado ./build-$ARCH$BUILD_EXTRA/install/bin/${EXE_PREFIX}gcc \
+ -B$SANDBOX/$ARCH/obj/gcc2/gcc/ \
+ $ARGS
+
+exit

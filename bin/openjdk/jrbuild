@@ -1,0 +1,27 @@
+#!/bin/bash
+set -e
+
+sub_usage()
+{
+  echo "$@ stage"
+}
+
+BASEDIR=$(dirname $0)
+REMOTE_DIR=~${BASEDIR#$HOME}
+
+source ${BASEDIR}/jcommon
+mustbeinsandbox
+ggetargs $@
+shift $SHIFT
+ARCH=$1
+shift
+asetarch $ARCH $REMOTE_MACHINE
+
+ARGS=$@
+ARGS=${ARGS%^M}
+
+#ado rs -m $REMOTE_MACHINE
+
+
+rdo $REMOTE_MACHINE "SANDBOX=$SANDBOX SANDBOX_TYPE=$SANDBOX_TYPE JAVA_HOME=$JAVA_HOME ${REMOTE_DIR}/jbuild $RTARGET $DIRCODE $ARGS"
+echo "Executed on $REMOTE_MACHINE"

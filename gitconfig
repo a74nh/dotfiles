@@ -1,0 +1,27 @@
+[user]
+	email = alan.hayward@arm.com
+	name = Alan Hayward
+[diff]
+	tool = diffmerge
+	prompt = false
+[difftool]
+	prompt = false
+[sendemail]
+	smtpserver = outlook.office365.com
+	smtpserverport = 587
+	smtpencryption = tls
+	smtpuser = alan.hayward@arm.com
+	# smtppass =
+[alias]
+    showtool = "!showci () { rev=${1:-HEAD}; git difftool $rev~1 $rev; }; showci $1"
+	l = "log --color --pretty=format:'%C(auto,yellow)%h %C(auto,blue)%>(12,trunc)%ai %C(auto,green)%<(15,trunc)%aN %C(auto,reset)%s%C(auto,red)% gd% D'"
+	le = "log --color --pretty=format:'%C(auto,yellow)%h %C(auto,blue)%>(12,trunc)%ai %C(auto,green)%ae %C(auto,reset)%s%C(auto,red)% gd% D'"
+	#--graph
+# [log]
+  # date = relative
+[format]
+[push]
+	default = upstream
+[core]
+	excludesfile = /Users/alahay01/.gitignore_global
+	hooksPath = /Users/alahay01/graal/ci-scripts/helper/githooks

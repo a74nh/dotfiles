@@ -1,0 +1,21 @@
+#!/bin/bash
+
+sub_usage()
+{
+  echo "$@ args"
+}
+
+source ~/bin/acommon
+
+ARGS=$@
+#ARGS=${ARGS#*-fdiagnostics-color=never}
+ARGS=${ARGS%^M}
+
+
+LINE=$(./build-$ARCH$BUILD_EXTRA/install/bin/${EXE_PREFIX}gcc \
+ -B$SANDBOX/$ARCH/obj/gcc2/gcc/ \
+ $ARGS -### 2>&1 | egrep "^ " | head -1)
+
+ado gdb --args ${LINE//\"/}
+
+exit

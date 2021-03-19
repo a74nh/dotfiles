@@ -1,0 +1,28 @@
+#!/usr/bin/python
+
+import argparse
+import subprocess
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--revision',
+                    help='modify an existing revision')
+args = parser.parse_args()
+
+extra = []
+
+diffs = subprocess.check_output([
+    'git', 'log', '--format=oneline', 'origin/master..HEAD'
+]).split('\n')
+
+if len(diffs) > 1:
+    extra.append('--parent=HEAD~1')
+
+if args.revision:
+    extra += ['-r', args.revision, '--guess-fields', 'yes']
+
+subprocess.call([
+    'rbt', 'post',
+    '--target-groups=pdsw-gcc64-patches',
+    '--server=http://pdtlreviewboard.cambridge.arm.com',
+    '--repository-url=/var/www/reviews.pdtl/git/gcc-pdtl.git'
+] + extra)

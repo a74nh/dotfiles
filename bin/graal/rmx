@@ -1,0 +1,21 @@
+#!/bin/bash
+# Run mx in the same pwd on another machine.
+# -s : Rsync the git repo first
+
+USAGE="Usage: $0 machine [-s] commands"
+MACHINE=${1:?$USAGE}; shift
+while getopts s opt
+do case $opt in
+  s) reposync $MACHINE; echo;;
+  *) echo $USAGE; exit 2
+esac done
+shift $(($OPTIND - 1))
+CMDS=${@:?$USAGE}
+
+#For MacOS, switch /Users to /home
+DIR=$(pwd|sed 's/^\/Users/\/home/')
+MX=$(which mx|sed 's/^\/Users/\/home/')
+MX=${MX:?Cannot find mx}
+
+set -x
+ssh ${MACHINE} "cd ${DIR} && ${MX} $CMDS"

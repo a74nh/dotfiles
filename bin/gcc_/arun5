@@ -1,0 +1,26 @@
+#!/bin/bash
+
+
+sub_usage()
+{
+  echo "$@ stage args"
+}
+
+source ~/bin/acommon
+
+SUITE=$1
+shift
+ARGS=$@
+ARGS=${ARGS%^M}
+
+export RUNTESTFLAGS="$ARGS --target_board=$RUNARCH";
+
+#ado ./build-me.sh --target=$ARCH --dejagnu-site=aarch64-elf-gem5.exp $SUITE
+
+ado ./oban-scripts/build-elf.sh \
+  --target=$ARCH \
+  --builddir=$SANDBOX/build-$ARCH \
+  --srcdir=$SANDBOX/src \
+  --dejagnu-site=boards/aarch64-elf-gem5.exp \
+  $SUITE
+

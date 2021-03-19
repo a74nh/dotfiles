@@ -1,0 +1,55 @@
+#!/bin/bash
+################################################################################
+#
+#  workon
+#
+#  By Alan Hayward
+#
+#  Assuming $SANDBOX is set, set up env. Script must be sourced.
+#
+################################################################################
+
+
+################################################################################
+# getsandboxinfo function
+
+getsandboxinfo() #sandbox
+{
+  BOX=$1
+  
+  CURRENT=""
+  if [ "$BOX" = "$SANDBOX" ]
+  then
+    CURRENT="*"
+  fi
+
+  SANDBOX_TYPE="gnu"
+  # COMMENT=""
+  # if [ -f $BASE_DIR/$BOX/.comment ]
+  # then
+  #   COMMENT="\""$(cat $BASE_DIR/$BOX/.comment)"\"";
+  # fi
+}
+
+
+################################################################################
+# workon
+
+if [ -n "$SANDBOX" ]
+then
+
+  echo
+  echo "Sandbox: $SANDBOX  [$SANDBOX_TYPE]"
+  echo "Comment: $COMMENT"
+  echo
+
+  #export go function
+  go() { DIR=$(getdir $@); if [[ $? -eq 0 && -n "$DIR" ]]; then cd $DIR; else getdir $@; fi }
+  export -f go
+
+  export SANDBOX
+  export SANDBOX_TYPE
+  export SANDBOXSHORT="[]"
+
+fi
+

@@ -1,0 +1,25 @@
+#!/bin/bash
+
+
+sub_usage()
+{
+  echo "$@ stage"
+}
+
+source ~/bin/acommon
+
+SUITE=$1
+if [ -z "$SUITE" ]
+then
+  SUITE="*.log"
+else
+  SUITE="${SUITE}.log"
+fi
+
+go ${DIRCODE}r
+
+egrep "^FAIL" ${SUITE}
+ls ${SUITE}
+egrep "^FAIL" ${SUITE} | wc -l
+
+

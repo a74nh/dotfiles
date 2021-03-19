@@ -1,0 +1,17 @@
+#!/bin/bash
+set -e
+
+sub_usage()
+{
+  echo "$@ stage"
+}
+
+source ~/bin/gdb/gcommon
+
+ARGS=$@
+ARGS=${ARGS%^M}
+
+ado rsync -zavh src/binutils-gdb $REMOTE_MACHINE:$(getdir)src/
+
+rdo $REMOTE_MACHINE "SANDBOX=$SANDBOX ~/bin/gdb/gbuild $RTARGET $DIRCODE $ARGS"
+echo "Exeuted on $REMOTE_MACHINE"

@@ -1,0 +1,3 @@
+rm -rf "~/Library/Saved\ Application\ State/org.gnome.meld.savedState/"
+ls "~/Library/Saved\ Application\ State/org.gnome.meld.savedState/"
+meld.orig $@

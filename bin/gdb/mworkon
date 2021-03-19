@@ -1,0 +1,141 @@
+#!/bin/bash
+################################################################################
+#
+#  mworkon
+#
+#  By Alan Hayward
+#
+#  Presents a menu of your SANDBOX work dirs
+#  If you are not in a "workon" session, it asks you to select an entry and opens it
+#  If you are in a session, it gives you details of the session
+#  When exiting a session started with mworkon, you'll get a helpful exit message
+#
+################################################################################
+
+
+#source $(dirname $0)/sb_common
+
+
+################################################################################
+# getsandboxinfo function
+
+getsandboxinfo() #sandbox
+{
+  BOX=$1
+  
+  CURRENT=""
+  if [ "$BOX" = "$SANDBOX" ]
+  then
+    CURRENT="*"
+  fi
+
+  SANDBOX_TYPE="gnu"
+  # COMMENT=""
+  # if [ -f $BASE_DIR/$BOX/.comment ]
+  # then
+  #   COMMENT="\""$(cat $BASE_DIR/$BOX/.comment)"\"";
+  # fi
+}
+
+
+getsandboxlist()
+{
+  SANDBOX_LIST=
+  OLD_IFS=$IFS
+  IFS=":"
+  for DIR in $SANDBOX_PATH
+  do
+    #echo $DIR
+    IFS=$OLD_IFS
+    for SUBDIR in $(find -L $DIR -mindepth 1 -maxdepth 1 -type d)
+    do
+      #echo --$SUBDIR
+      if [[ -d "$SUBDIR/oban-scripts" && $SUBDIR != *-orig ]]
+      then
+        #echo ---$SUBDIR
+        SANDBOX_LIST=(${SANDBOX_LIST[@]} $SUBDIR)
+      fi
+    done
+    IFS=":"
+  done
+  IFS=$OLD_IFS
+}
+
+
+################################################################################
+# List work dirs
+
+echo "Sandbox Work Areas ($(hostname))"
+echo
+getsandboxlist
+
+
+MAX_BOX_LENGTH=0
+for BOX in ${SANDBOX_LIST[@]}
+do
+  if [ ${#BOX} -gt $MAX_BOX_LENGTH ]
+  then
+    MAX_BOX_LENGTH=${#BOX}
+  fi
+done
+
+ITEM=1
+for BOX in ${SANDBOX_LIST[@]}
+do
+  getsandboxinfo $BOX
+  printf "%1s%-2.2s%-2s %-*s %s\n" "$CURRENT" "$ITEM" "$DEFAULT" "$MAX_BOX_LENGTH" "$BOX" "$COMMENT"
+  ITEM=$((ITEM+1))
+done
+
+
+################################################################################
+# User select new sandbox (if not already in a sandbox)
+
+SETTING_SANDBOX=
+while [ -z "$SANDBOX" ]
+do
+  SETTING_SANDBOX=1
+
+  echo
+  echo "Enter index to work on:"
+  read i;
+
+  SANDBOX=${SANDBOX_LIST[$((i-1))]}
+  
+  if [ -z "$SANDBOX" ]
+  then
+    echo "Invalid entry. Enter a number from 1 to ${#SANDBOX_LIST[@]}"
+  fi
+
+done
+
+
+################################################################################
+# List selected sandbox
+
+getsandboxinfo $SANDBOX
+echo
+if [ "$SETTING_SANDBOX" ]
+then
+  echo "Setting Sandbox to:"
+else
+  echo "Sandbox currently set to:"
+fi
+
+
+################################################################################
+# workon
+
+if [ "$SETTING_SANDBOX" ]
+then
+  source workon
+  echo "Changing directory to: $SANDBOX"
+  echo "Spawning new shell ($SHELL)..."
+  cd $SANDBOX
+  $SHELL
+  
+  echo "***EXITING WORKING ON $SANDBOX***"
+
+fi
+
+exit 0

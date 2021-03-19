@@ -1,0 +1,22 @@
+#!/bin/bash
+
+
+function ado()
+{
+ local OPTIND line
+  echo ado
+  echo $@
+  while getopts a:b line
+  do
+    case $line in
+    a) echo "a=$OPTARG";;
+    b) echo b;;
+    esac
+  done
+  shift $(($OPTIND - 1))
+  echo $@
+}
+
+ado -a 1 2 3
+ado 4 5 6
+ado -a 7 8 9

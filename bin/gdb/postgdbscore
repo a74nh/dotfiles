@@ -1,0 +1,14 @@
+#!/bin/bash -x
+
+if [[ $# -ne 1 ]]
+then
+  echo "Usage $0 linesremaining"
+  exit 2
+fi
+
+VAL=$1
+
+TIME=$((`date +%s`*1000000000+`date +%-N`/1000000))
+
+
+curl -i -XPOST 'https://influxdb-dashboard.openshift.mi.arm.com/write?db=hpccompilers' --data-binary 'gdb_loc_remaining_to_upstream value='$VAL' '$TIME

@@ -1,0 +1,21 @@
+#!/bin/bash
+
+sub_usage()
+{
+  echo "$@ prog"
+}
+
+source ~/bin/acommon
+
+ARGS=$@
+ARGS=${ARGS%^M}
+
+ado ./build-$ARCH/install/bin/$ARCH-gcc \
+ -B$SANDBOX/$ARCH/obj/gcc2/gcc/ \
+ -fno-diagnostics-show-caret \
+ -fdiagnostics-color=never \
+ -O2 \
+ -specs=aem-validation.specs \
+ -lm \
+ $ARGS
+

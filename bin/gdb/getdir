@@ -1,0 +1,156 @@
+#!/bin/bash
+##############################################################################
+#
+# getdir
+# 
+# By Alan Hayward
+#
+USAGE="getdir [-d area] [-h] args(s)";
+#
+# Outputs the full path to your current work area + expanded args
+#
+#       -h  - help - echo the possibilities after the expanded args
+#       -s  - use given sandbox
+#
+##############################################################################
+
+### gnu base
+### gnu src         src
+### gnu s           src
+### gnu gcc         src/gcc/gcc
+### gnu lc          src/glibc
+### gnu bin         src/binutils-gdb
+### gnu gdb         src/binutils-gdb/gdb
+### gnu g           src/binutils-gdb/gdb
+### gnu server      src/binutils-gdb/gdb/gdbserver
+### gnu t           src/gcc/gcc/testsuite
+### gnu tgcc        src/gcc/gcc/testsuite/gcc.dg
+### gnu ta          src/gcc/gcc/testsuite/gcc.target/aarch64
+### gnu a           src/gcc/gcc/config/aarch64
+### gnu con         src/gcc/contrib
+### gnu be          build-aarch64_be-none-elf
+### gnu ber         build-aarch64_be-none-elf/results
+### gnu 64          build-aarch64-none-elf
+### gnu 64r         build-aarch64-none-elf/results
+### gnu 64s         build-aarch64-none-elf-armv8-a+sve
+### gnu 64sa        build-aarch64-none-elf-armv8-a+sve
+### gnu 64sr        build-aarch64-none-elf-armv8-a+sve/results
+### gnu 64l         build-aarch64-none-linux-gnu
+### gnu 64lr        build-aarch64-none-linux-gnu/results
+### gnu 64sl        build-aarch64-linux-gnu-armv8-a+sve
+### gnu 64slr       build-aarch64-linux-gnu-armv8-a+sve/results
+### gnu i           src/gcc/gcc/config/i386
+### gnu tx          src/gcc/gcc/testsuite/gcc.target/i386
+### gnu tv          src/gcc/gcc/testsuite/gcc.dg/vect
+### gnu tt          src/gcc/gcc/testsuite/gcc.dg/torture
+### gnu os          src/oban-scripts
+### gnu x           build-x86
+### gnu xr          build-x86/results
+### gnu spec        src/spec2006
+### gnu bat         build-aarch64/gdb/testsuite
+### gnu bxt         build-x86/gdb/testsuite
+
+### jdk base
+### jdk s           src
+### jdk h           src/hotspot/share
+### jdk i           src/hotspot/share/interpreter
+### jdk a           src/hotspot/cpu/aarch64
+### jdk c1          src/hotspot/share/c1
+### jdk c2          src/hotspot/share/opto
+### jdk rt          build/aarch64-release/test-results
+### jdk rt          build/aarch64-release/test-support
+
+
+
+##############################################################################
+##Deal with command line
+
+unset HELP
+
+while getopts hd:x line
+do
+     case $line in
+     s) SANDBOX=$OPTARG; if [ $(validsandbox $OPTARG) -ne 0 ];
+                         then
+			   echo "Cannot find sandbox $SANDBOX";
+			   exit 1;
+			 fi
+			 SANDBOXBASE=$(getrootdir $SANDBOX);;
+     h) HELP=1;;
+     *) echo $USAGE; exit 2;;
+     esac
+done
+shift $(($OPTIND - 1))
+
+
+if [[ -z "$SANDBOX" ]]
+then
+  echo Error: not in sandbox
+  exit 2
+fi
+
+ARGS=$1
+if [ -z "$ARGS" ]
+then
+ ARGS="base"
+fi
+
+##############################################################################
+##get the directory
+
+egrep "^### $SANDBOX_TYPE" $0 |\
+awk -v x=$ARGS -v dir=$SANDBOX '{ if($3==x && 0==system("test -d "dir"/"$4))
+                                      {
+                                        print dir"/"$4
+                                        exit
+                                      }}'
+
+
+# awk -v x=$ARGS -v dir=$SANDBOXBASE -v count=1 'BEGIN { arraysize=split(x,array,"+"); }
+#                                                       {  if ($1==count)
+#                                                          {
+#                                                            if ($2=="null") exit;
+#                                                            if ($2==array[count])
+#                                                            { 
+#                                                              dir=dir "/" $3; 
+#                                                              count++;
+#                                                              if (substr($3,1,1)=="/") dir=$3;
+#                                                            }
+#                                                          }
+#                                                       } END { for(remains=count;remains<=arraysize;remains++)
+#                                                               {
+#                                                                 newdir=dir "/" array[remains];
+#                                                                 if (0==system("test -d "newdir))
+#                                                                 {
+#                                                                   dir=newdir;
+#                                                                 } 
+#                                                               }
+#                                                               print dir;
+#                                                             }'
+
+
+
+##############################################################################
+##help message
+
+if [ $HELP ];
+then
+   awk -v x=$ARGS -v dir=$SANDBOXBASE -v count=1 'BEGIN { num=split(x,array,"_"); }
+                                                      {  if ($1==count)
+                                                            {
+                                                              if ($2=="null") exit;
+                                                              if (count<=num)
+                                                              {
+                                                                if ($2==array[count])
+                                                                {
+                                                                 dir=dir "/" $3; 
+                                                                 count++;
+                                                                 if (substr($3,0,1)=="/") dir=$3;
+                                                                }
+                                                              }
+                                                              else
+                                                              {print $2 "\t" dir "/" $3};
+                                                            }
+                                                      }' $DIRSFILE
+exit 1
+fi

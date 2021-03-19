@@ -1,0 +1,11 @@
+
+killall -u alahay01 -9 ssh-agent
+
+
+pgrep -u $USER ssh-agent >/dev/null
+  if [ $? -ne 0 ]
+  then
+    source $(dirname $0)/.start-agent.sh
+    ssh-add
+  fi
+

@@ -1,0 +1,5 @@
+#!/usr/bin/perl
+
+$x=eval(shift);
+print $x;
+printf("\n0x%x\n", $x);

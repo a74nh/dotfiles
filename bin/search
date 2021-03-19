@@ -1,0 +1,56 @@
+#!/bin/bash
+##
+##############################################################################
+#                                                                   
+#  File Name:                                                       
+#     search
+#
+USAGE="USAGE: search [-h] [-1] [-i] pattern"
+#                                                              
+#  Purpose:                                                         
+#     This tool search files for expressions and prints the name of the files
+#     which have expression printed to the screen.
+#                                                                   
+##############################################################################
+set -f
+
+if [ $# -lt 1 ]
+then
+  echo $USAGE
+  exit 2
+else
+
+while getopts h1ij line
+do
+  case $line in
+    h) EXTRA=$EXTRA' -name *.h -o -name *.hpp';;
+    1) EXTRA="-maxdepth 1 $EXTRA";;
+    i) GEXTRA=$GEXTRA" -i";;
+    j) EXTRA='-name *.java';;
+    *) echo $USAGE; exit 2;;
+  esac
+done
+shift $(($OPTIND - 1))
+
+echo;
+
+  # ! -name "*.htm" 	\
+  # ! -name "*.html" 	\
+  
+find . $EXTRA -follow -type f \
+  ! -name "*.o"      \
+  ! -name ".#*"      \
+  ! -name "~*"       \
+  ! -name "*~"       \
+  ! -iname "tags"   \
+  ! -path "*/.svn/*"    \
+  ! -name ".*"       \
+  ! -name "ChangeLog*" \
+  | xargs grep -s -n $GEXTRA --color=always "$*" | awk -F: '{ printf "%s:%s : ", $1, $2; $1=""; $2=""; print $0 }';
+fi
+
+#	-name "*.*" 		\
+#	! -perm -+X 		\
+
+
+#  -exec grep -s -n $GEXTRA --color=always "$*" ./foo {} \; | awk -F: '{ printf "+%s %s : ", $2, $1; $1=""; $2=""; print $0 }';

@@ -1,0 +1,164 @@
+IgnoreUnknown UseKeychain
+
+Host *
+  UseKeychain yes
+  ForwardX11=yes
+  ForwardX11Trusted=yes
+
+host man-0* *arm.com
+      IdentityFile ~/.ssh/id_rsa
+
+host hw-a20-18 hw-a20-19 hw-a21-13 hw-a21-14 hw-a21-16 hw-a21-17 hw-a21-18 hw-a21-17
+      HostName %h.euhpc2.arm.com
+
+host man-01 man-02 man-03 man-04 man-05 man-06 man-07 man-08
+      HostName %h.manchester.arm.com
+
+host m8
+      Hostname man-08.manchester.arm.com
+
+host m7
+      Hostname man-07.manchester.arm.com
+
+host m6
+      Hostname man-06.manchester.arm.com
+
+host m5
+      Hostname man-05.manchester.arm.com
+
+host m4
+      Hostname man-04.manchester.arm.com
+
+host m3
+      Hostname man-03.manchester.arm.com
+
+host m2
+      Hostname man-02.manchester.arm.com
+
+host m1
+      Hostname man-01.manchester.arm.com
+
+host t4
+      Hostname taishan-4.on.arm.com
+host t3
+      Hostname taishan-3.on.arm.com
+host t2
+      Hostname taishan-2.on.arm.com
+host t1
+      Hostname taishan-1.on.arm.com
+
+host a18
+      Hostname hw-a21-18.euhpc2.arm.com
+
+host a16
+      Hostname hw-a21-16.euhpc2.arm.com
+
+Host pdsw-git
+      HostName pdsw-git.cambridge.arm.com
+      ForwardX11=yes
+      IdentityFile ~/.ssh/id_rsa
+
+Host gcc.gnu.org
+    IdentityFile ~/.ssh/id_gcc_rsa
+
+Host sourceware.org
+    IdentityFile ~/.ssh/id_gcc_rsa
+
+Host github.com
+    IdentityFile ~/.ssh/id_github_rsa
+
+#Host aws
+#    HostName ec2-52-32-189-129.us-west-2.compute.amazonaws.com
+#    IdentityFile ~/.ssh/skynet.pem
+#    User ubuntu
+
+#Host gerrit
+#    HostName ds-gerrit.euhpc.arm.com
+#    Port 29418
+#    IdentityFile ~/.ssh/buildbot_id_rsa
+#    User mdc-bbot
+#    ForwardX11=no
+
+Host ohpc
+    HostName 64.28.99.91
+    IdentityFile ~/.ssh/id_ohpc_rsa
+    user admin
+
+Host skynet
+    HostName hw-a21-18.euhpc2.arm.com
+    User mdc-bbot
+    IdentityFile ~/.ssh/buildbot_id_rsa
+
+Host vm
+    HostName 127.0.0.1
+    Port 3022
+
+Host pi
+    HostName ssh.armdsg1.hostedpi.com
+    Port 5058
+
+Host packetnet
+    Hostname 147.75.105.22	
+    IdentityFile ~/.ssh/packetnet
+    User root
+
+Host gdbbbot
+    HostName 139.178.83.18
+    IdentityFile ~/.ssh/packetbbot
+    User gdb_buildbot
+
+Host testthis.ramanas.me.uk
+    IdentityFile ~/.ssh/packetbbot
+
+
+Host sve
+    HostName man-08.manchester.arm.com
+    Port 8022
+    User root
+    IdentityFile ~/.ssh/buildbot_id_rsa
+
+Host 83
+    HostName man-08.manchester.arm.com
+    Port 8023
+    User root
+    IdentityFile ~/.ssh/buildbot_id_rsa
+
+Host panda
+    Hostname TestFarm-Panda-A9x2-Ubuntu-1.cambridge.arm.com
+
+Host farm7
+    HostName hw-a21-18.euhpc2.arm.com
+    Port 8032
+    User alahay01
+    IdentityFile ~/.ssh/id_rsa
+
+Host dog
+    Hostname oss-d0509.lab.cambridge.arm.com
+
+Host github.com
+    User git
+    IdentityFile ~/.ssh/a74nh_github
+
+Host aws
+    User bot
+    Hostname 18.203.135.173
+    IdentityFile ~/.ssh/id_shanghaibot_rsa
+ 
+Host *.shanghai.arm.com
+    User bot
+    IdentityFile ~/.ssh/id_shanghaibot_rsa
+
+Host rx
+    Hostname runtime-login-01.oss.arm.com
+
+Host fedorap
+    Port 8022
+    Hostname localhost
+
+Host fedora
+    Port 2223
+    Hostname localhost
+
+Host ubuntu
+    Port 2222
+    Hostname localhost

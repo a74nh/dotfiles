@@ -1,0 +1,28 @@
+#!/bin/bash
+
+USAGE="$0 executable gem5args"
+
+ado()
+{
+  echo $@
+  time $@
+  echo "exit status: $?"
+}
+
+if [ -z "$GEM5" ]
+then
+  export GEM5=/opt/gem5/latest
+fi
+
+if [ $# -lt 1 ]
+then
+  echo $USAGE
+  exit 2
+fi
+
+TEST=$(readlink -f $1)
+ARGS=$2
+
+ado $GEM5/bin/gem5.opt $2 $GEM5/configs/example/fs.py --mem-size=2GB --semihosted --kernel=$TEST
+
+

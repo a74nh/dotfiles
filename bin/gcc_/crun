@@ -1,0 +1,16 @@
+#!/bin/bash
+
+
+sub_usage()
+{
+  echo "$@ executable"
+}
+
+source ~/bin/acommon
+
+ARGS=$@
+ARGS=${ARGS%^M}
+
+ado ./oban-scripts/aem-run --model=validation $AEMFLAGS $ARGS
+
+echo Return: $?

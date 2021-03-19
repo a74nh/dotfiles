@@ -1,0 +1,233 @@
+#!/bin/bash
+
+PROG=$(basename $0)
+SAVED_RUNS_FILE=$HOME/.${PROG}.saved
+
+
+#This sucks
+REMOTE_MACHINE=a18
+MAX_LOAD="-l 24"
+QEMU_PATH="/work/alahay01/sim/build/dejagnu"
+
+function mustbeinsandbox()
+{
+	if [[ -z "$SANDBOX" ]]
+	then
+	  echo Error: not in sandbox
+	  exit 2
+	fi
+}
+
+function usage()
+{
+  echo "Usage:"
+  echo "  $PROG arch [ l [num] | ll [num] | r num ]"
+
+  sub_usage "  $PROG arch [ s ]"
+  exit 2
+}
+
+function asetarch()
+{
+  DIRCODE=$1
+
+  case $DIRCODE in
+
+  64|le)
+    ARCH=aarch64-none-elf
+    EXE_PREFIX=${ARCH}-
+    RUNARCH=aarch64-elf-aem
+    WITH_FLAGS=
+    AEM_FLAGS=
+    AFTER_DASH_FLAGS=;;
+
+  64s)
+    ARCH=aarch64-none-elf
+    EXE_PREFIX=${ARCH}-
+    RUNARCH=aarch64-elf-gem5
+    WITH_FLAGS="--with-arch=armv8-a+sve"
+    BUILD_EXTRA="-armv8-a+sve"
+    AEM_FLAGS=
+    AFTER_DASH_FLAGS=;;
+
+  64sa)
+    ARCH=aarch64-none-elf
+    EXE_PREFIX=${ARCH}-
+    RUNARCH=aarch64-elf-aem-sve
+    WITH_FLAGS="--with-arch=armv8-a+sve"
+    BUILD_EXTRA="-armv8-a+sve"
+    AEM_FLAGS=
+    AFTER_DASH_FLAGS=;;
+
+  64sl)
+    ARCH=aarch64-linux-gnu
+    EXE_PREFIX=${ARCH}-
+    RUNARCH=
+    WITH_FLAGS="--with-arch=armv8-a+sve"
+    BUILD_EXTRA="-armv8-a+sve"
+    AEM_FLAGS=
+    AFTER_DASH_FLAGS="--dejagnu-src=$QEMU_PATH";;
+
+  64l)
+    ARCH=aarch64-none-linux-gnu
+    EXE_PREFIX=${ARCH}-
+    RUNARCH=
+    WITH_FLAGS=
+    AEM_FLAGS=
+    AFTER_DASH_FLAGS="--dejagnu-src=$QEMU_PATH";;
+
+  be)
+    ARCH=aarch64_be-none-elf
+    EXE_PREFIX=${ARCH}-
+    RUNARCH=aarch64_be-elf-aem
+    WITH_FLAGS=
+    BUILD_EXTRA=
+    AEM_FLAGS=--bigendian
+    AFTER_DASH_FLAGS=;;
+
+  a)
+    ARCH=arm-none-linux-gnueabihf
+    EXE_PREFIX=${ARCH}-
+    RUNARCH=
+    WITH_FLAGS=
+    BUILD_EXTRA="-armv7-a"
+    AEM_FLAGS=
+    AFTER_DASH_FLAGS=;;
+    #"--dejagnu-src=$QEMU_PATH";;
+
+  x)
+    NATIVE=1
+    ARCH="x86"
+    EXE_PREFIX=
+    RUNARCH=""
+    WITH_FLAGS=""
+    BUILD_EXTRA=""
+    AEM_FLAGS=
+    AFTER_DASH_FLAGS="-j 32";;
+
+
+  *) echo "ERROR: unknown build type"
+     exit 2;;
+
+  esac
+}
+
+function asetsearch()
+{
+  SEARCH_ARG=$1
+  shift
+  unset DO_SAVE
+
+  case $SEARCH_ARG in
+
+  s) DO_SAVE=1
+     SAVE_ARGS=$@
+     SAVE_ARGS=${SAVE_ARGS%^M}
+     return 1
+     ;;
+
+  l) if [ -f $SAVED_RUNS_FILE ]
+     then
+       if [ -n "$1" ]
+       then
+         awk '{ if(NR=='$1' || $1=="\"'$1'\"") print NR": "$1;}' $SAVED_RUNS_FILE
+         #sed -n "${1}p" $SAVED_RUNS_FILE
+       else
+         awk '{ print NR": "$1;}' $SAVED_RUNS_FILE
+         #cat -n $SAVED_RUNS_FILE
+       fi
+     fi 
+     exit 0
+     ;;
+
+  ll) if [ -f $SAVED_RUNS_FILE ]
+     then
+       if [ -n "$1" ]
+       then
+         awk '{ if(NR=='$1' || $1=="\"'$1'\"") print NR": "$0;}' $SAVED_RUNS_FILE
+       else
+         awk '{ print NR": "$0;}' $SAVED_RUNS_FILE
+       fi
+     fi 
+     exit 0
+     ;;
+
+  r) FIND=$1
+     shift
+
+     awk '{ if(NR=='$FIND' || $1=="\"'$FIND'\"") print NR": "$1;}' $SAVED_RUNS_FILE
+     
+     NEW="$(awk '{ if(NR=='$FIND' || $1=="\"'$FIND'\"") { $1=""; print $0;}}' $SAVED_RUNS_FILE)"
+
+     $0 $NEW $@
+     exit 0
+     ;;
+
+  \?) usage
+
+  esac
+}
+
+function adosave()
+{
+  if [ -n "$DO_SAVE" ]
+  then
+    echo
+    echo "Enter short title to save:"
+    read line
+    if [ -n "$line" ]
+    then
+      echo "\"$line\" $SAVE_ARGS" >> $SAVED_RUNS_FILE
+    else
+      echo "Not saved"
+    fi
+  fi
+}
+
+function ado()
+{
+  go
+  if [ "$1" == "-d" ]
+  then
+    cd $2
+    shift 2
+  fi
+  echo $@
+  echo
+  time $@
+  adosave
+}
+
+function rdo()
+{
+  go
+  gdir=""
+  if [ "$1" == "-d" ]
+  then
+    gdir="$2"
+    shift 2
+  fi
+  remote=$1; shift
+  echo "ssh $remote \"cd $(getdir $gdir) && $@\""
+  echo
+  time ssh $remote "cd $(getdir $gdir) && $@"
+  adosave
+}
+
+#Common header
+mustbeinsandbox
+
+if [ -z "$SPECIAL_CASE" ]
+then
+  asetsearch $@
+  shift $?
+  ARCH=$1
+  shift
+  asetarch $ARCH
+
+  if [ -z "$NATIVE" ]
+  then
+    AFTER_DASH_FLAGS="-- $AFTER_DASH_FLAGS"
+  fi
+fi
+

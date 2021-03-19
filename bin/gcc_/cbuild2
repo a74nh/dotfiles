@@ -1,0 +1,20 @@
+#!/bin/bash
+
+sub_usage()
+{
+  echo "$@ args"
+}
+
+source ~/bin/acommon
+
+ARGS=$@
+ARGS=${ARGS#*-fdiagnostics-color=never}
+ARGS=${ARGS%^M}
+
+ado ./build-$ARCH/install/bin/$ARCH-gcc \
+ -B$SANDBOX/$ARCH/obj/gcc2/gcc/ \
+ -fno-diagnostics-show-caret \
+ -fdiagnostics-color=never \
+ $ARGS
+
+exit

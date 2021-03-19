@@ -1,0 +1,36 @@
+#!/bin/bash
+
+sub_usage()
+{
+  echo "$0 [-m machine] repo"
+}
+
+SPECIAL_CASE=1
+source ~/bin/jcommon
+
+
+if [ "$1" == "-m" ]
+then
+  REMOTE_MACHINE=$2
+  shift 2
+fi
+
+if [ $# -gt 1 ]
+then
+ sub_usage
+ exit 2
+fi
+
+if [ $# -eq 1 ]
+then
+  REPO=$(getdir $1)
+else
+  REPO=$(getdir)
+  # go
+  # echo rsync -zavh -f '- */' -f '- .*' $REPO $REMOTE_MACHINE:$REPO/
+  # echo
+  # time rsync -zavh -f '- */' -f '- .*' $REPO $REMOTE_MACHINE:$REPO/
+fi
+
+
+ado rsync -zavh --delete --exclude build --exclude src/utils/IdealGraphVisualizer $REPO $REMOTE_MACHINE:$REPO/

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+sudo sshfs -o allow_other alahay01@login1.euhpc.arm.com:/home/alahay01 ~/euhpc-alahay01
+
+sudo sshfs -o allow_other alahay01@dsgci-3.euhpc.arm.com:/work/alahay01 ~/dsgci-3-work

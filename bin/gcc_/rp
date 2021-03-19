@@ -1,0 +1,25 @@
+#!/bin/bash
+
+sub_usage()
+{
+  echo "$0 [repo]"
+}
+
+SPECIAL_CASE=1
+source ~/bin/acommon
+
+if [ $# -gt 1 ]
+then
+ sub_usage
+ exit 2
+elif [ $# -eq 1 ]
+then
+  REPO=$(getdir $1)
+  ado rsync -zavh $REMOTE_MACHINE:$REPO $REPO/../
+else
+  REPO=$(getdir)
+  go
+  echo rsync -zavh -f '- */' -f '- .*' $REMOTE_MACHINE:$REPO $REPO/ 
+  echo
+  time rsync -zavh -f '- */' -f '- .*' $REMOTE_MACHINE:$REPO $REPO/ 
+fi

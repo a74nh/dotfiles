@@ -1,0 +1,23 @@
+#!/bin/bash
+set -e
+
+sub_usage()
+{
+  echo "$@ stage"
+}
+
+source ~/bin/acommon
+
+ARGS=$@
+ARGS=${ARGS%^M}
+
+ado rsync -zavh src/gcc $REMOTE_MACHINE:$(getdir)src/
+
+if [ -n "$NATIVE" ]
+then
+  mkdir -p build-x86 2>/dev/null
+  rdo -d x $REMOTE_MACHINE make $WITH_FLAGS $AFTER_DASH_FLAGS $ARGS
+  rdo -d x $REMOTE_MACHINE make $WITH_FLAGS $AFTER_DASH_FLAGS $ARGS install
+else
+  rdo $REMOTE_MACHINE ./build-me.sh --target=$ARCH $WITH_FLAGS $AFTER_DASH_FLAGS $ARGS
+fi

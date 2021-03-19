@@ -1,0 +1,26 @@
+#!/bin/bash
+
+ARCH=$1
+shift
+ARGS="$*"
+
+source ~/bin/acommon
+mustbeinsandbox
+asetarch $ARCH
+
+#grep -h "^spawn \|$ARGS" build-$ARCH/results/gcc.log | grep -B1 "$ARGS" | egrep "^spawn"
+#echo 
+
+grep -h "^spawn \|$ARGS" build-$ARCH/results/gcc.log \
+  | grep -B1 "$ARGS" \
+  | egrep "^spawn" \
+  | while read line
+do
+  line=${line#*xgcc}
+  line=${line%^M}
+  echo $line
+done
+
+#ado ./build-$ARCH/install/bin/$ARCH-gcc \
+# $ARGS2
+

@@ -1,0 +1,56 @@
+#!/bin/bash
+
+USAGE="$0 dir"
+DIR=${1:?$USAGE}
+
+refexe=$DIR/ref.out
+llexe=$DIR/O0.bc
+refout=$(mktemp)
+referr=$(mktemp)
+llout=$(mktemp)
+llerr=$(mktemp)
+
+if [[ ! -f ${refexe} ]]
+then
+ echo $USAGE
+ exit 2
+fi
+
+echo "********* ${refexe}"
+${refexe} >${refout} 2>${referr}
+refex=$?
+# echo >> ${referr}
+
+for TEST in $(ls $DIR/*.bc)
+do
+  mx lli ${TEST} >${llout} 2>${llerr}
+  llex=$?
+
+  echo "*********"
+  echo "*********mx lli ${TEST}"
+
+  diff ${refout} ${llout} &>/dev/null
+  if [ $? -ne 0 ]
+  then
+    echo "*********STDOUT DIFF:"
+    diff ${refout} ${llout}
+  fi
+  
+  diff ${referr} ${llerr} &>/dev/null
+  if [ $? -ne 0 ]
+  then
+    echo "*********STDERR DIFF:"
+    diff ${referr} ${llerr}
+  fi
+
+  if [[ $refex != $llex ]]
+  then
+    echo "*********EXIT VALUE DIFF:"
+    echo REF=$refex LLI=$llex
+  fi
+
+  rm ${llout} ${llerr}
+
+done
+
+rm ${refout} ${referr}

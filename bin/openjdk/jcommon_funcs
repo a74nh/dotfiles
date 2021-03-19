@@ -1,0 +1,20 @@
+#!/bin/zsh
+# Functions that go into the interactive shell
+
+go() { DIR=$(getdir $@); if [[ $? -eq 0 && -n "$DIR" ]]; then cd $DIR; else getdir $@; fi }
+
+jhome() #buildtype
+{
+  export JAVA_HOME=
+  local H=$(jbuilddir $@)
+  if [[ $? -eq 0 && -d "$H" ]]
+  then
+  	export JAVA_HOME=$H/jdk
+  	echo JAVA_HOME=$JAVA_HOME
+  	export PATH=$JAVA_HOME/bin:$PATH
+	# export SANDBOX_JHTYPE="{$@}"
+  fi
+  # source ~/.bashrc
+}
+
+alias igv='cd ~/work/IdealGraphVisualizer; JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_161.jdk/Contents/Home bash igv.sh & cd - >/dev/null'

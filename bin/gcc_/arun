@@ -1,0 +1,54 @@
+#!/bin/bash
+
+
+sub_usage()
+{
+  echo "$@ stage args"
+}
+
+source ~/bin/acommon
+
+SUITE=$1
+shift
+ARGS=$@
+ARGS=${ARGS%^M}
+
+if [ -n "$NATIVE" -o -z "$RUNARCH" ]
+then
+  export RUNTESTFLAGS="$ARGS";
+else
+  export RUNTESTFLAGS="$ARGS --target_board=$RUNARCH";
+fi
+
+export bld_aem_version_url=/arm/warehouse/SysGen/ModelPackages/aem-versions/
+
+echo RUNTESTFLAGS=$RUNTESTFLAGS
+
+if [ -n "$NATIVE" ]
+then
+  ado -d build-$ARCH make $WITH_FLAGS $AFTER_DASH_FLAGS $MAX_LOAD $SUITE
+else
+  ado ./build-me.sh --target=$ARCH $WITH_FLAGS $AFTER_DASH_FLAGS $MAX_LOAD $SUITE
+fi
+
+
+if [ -n "$NATIVE" ]
+then
+  go
+  cd build-$ARCH
+  mkdir results 2>/dev/null
+  echo
+  find . -name "*.sum" -not -path "./results/*" | while read -r fsum
+  do
+    echo build-$ARCH/results/$(basename $fsum)
+    mv $fsum results/
+    mv ${fsum/.sum/.log} results/
+  done
+fi
+
+#ado ./oban-scripts/build-elf.sh \
+#  --target=$ARCH \
+#  --builddir=$SANDBOX/build-$ARCH \
+#  --srcdir=$SANDBOX/src \
+#  $SUITE
+

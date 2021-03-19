@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [ $# -ne 2 ]
+then
+  echo Usage: $0 benchmark csvfileold csvfilenew
+  exit 2
+fi
+
+BENCHMARK=$1
+CSVFILEOLD=$2
+CSVFILENEW=$3
+
+awk -F, '{ if ($2=="'$BENCHMARK'" && $5=="InstCount" ) print $6,$3 }' $CSVFILEOLD | sort -nr > old.csv
+
+awk -F, '{ if ($2=="'$BENCHMARK'" && $5=="InstCount" ) print $6,$3 }' $CSVFILENEW | sort -nr > new.csv
+
+

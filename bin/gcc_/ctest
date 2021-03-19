@@ -1,0 +1,17 @@
+#!/bin/bash
+
+sub_usage()
+{
+  echo "$@ program"
+}
+
+source ~/bin/acommon
+
+ARGS=$@
+ARGS=${ARGS%^M}
+
+
+
+ado $ARGS
+
+exit

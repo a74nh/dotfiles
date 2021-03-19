@@ -1,0 +1,188 @@
+#!/bin/bash
+
+PROG=$(basename $0)
+PROGDIR=$(dirname $0)
+PATH=$PROGDIR:$PATH
+
+#This sucks
+REMOTE_MACHINE=man-01.manchester.arm.com
+QEMU_PATH="/work/alahay01/sim/build/dejagnu"
+
+MAX_LOAD=shift
+if [ -f /proc/cpuinfo ]
+then
+  MAX_LOAD="-j $(grep -c ^processor /proc/cpuinfo)"
+fi
+
+function mustbeinsandbox()
+{
+	if [[ -z "$SANDBOX" ]]
+	then
+	  echo Error: not in sandbox
+	  exit 2
+	fi
+	set +e
+	env | grep BASH_FUNC_go >/dev/null
+	if [ $? -ne 0 ]
+	then
+	  source $PROGDIR/workon >/dev/null
+	fi 
+	set -e
+}
+
+function usage()
+{
+  echo "Usage:"
+  echo "  $PROG arch [ -m machine ]"
+
+  sub_usage "  $PROG arch [ s ]"
+  exit 2
+}
+
+function ggetargs()
+{
+  SEARCH_ARG=$1
+  SHIFT=0
+
+  case $SEARCH_ARG in
+
+  "-m") REMOTE_MACHINE=$2
+	    SHIFT=2
+        ;;
+
+  \?) usage;;
+
+  esac
+}
+
+function asetarch()
+{
+  DIRCODE=$1
+
+  case $DIRCODE in
+
+  x)
+    ARCH=x86
+    CONFIGURE_EXTRA="--enable-targets=all"
+    ;;
+
+  # Native builds...
+
+  a)
+    ARCH=aarch64
+    ;;
+
+  a7)
+    ARCH=armv7hl
+    ;;
+
+  a7a)
+    ARCH=armv7hl-all
+    CONFIGURE_EXTRA="--enable-targets=all"
+    ;;
+
+  # Cross builds...
+
+  ac)
+    ARCH=aarch64
+    TARGET="aarch64-linux-gnu"
+    PATH_EXTRA=/work/alahay01/gcc-linaro-7.1.1-2017.08-x86_64_aarch64-linux-gnu/bin/
+    # CONFIGURE_EXTRA="--enable-64-bit-bfd"
+    ;;
+
+
+  ahfc)
+    ARCH=armhf
+    TARGET="arm-linux-gnueabihf"
+    CONFIGURE_EXTRA="--enable-64-bit-bfd --disable-readline"
+    ;;
+
+  ahfcx)
+    ARCH=armhf-x86
+    TARGET="arm-linux-gnueabihf"
+    HOST="x86_64-pc-linux-gnu"
+    CONFIGURE_EXTRA="--enable-64-bit-bfd"
+    ;;
+
+  abe)
+    ARCH=aarch64-be
+    TARGET="aarch64-linux-gnu"
+    PATH_EXTRA=/work/alahay01/gcc-linaro-7.1.1-2017.08-x86_64_aarch64-linux-gnu/bin/
+    # CONFIGURE_EXTRA="--enable-64-bit-bfd"
+    ;;
+
+
+  pc) 
+    ARCH=ppc
+    TARGET="powerpc-unknown-linux-gnu"
+    ;;
+
+  alphacx)
+    ARCH=alpha-x86
+    TARGET="alpha-linux-gnu"
+    HOST="x86_64-pc-linux-gnu"
+    ;;
+
+
+  *) echo "ERROR: unknown build type"
+     exit 2;;
+
+  esac
+
+  #If HOST not set use target
+  HOST=${HOST:-$TARGET}
+
+  #Build dir is based on ARCH name
+  BUILDDIR="build-$ARCH"
+}
+
+function ado()
+{
+  local OPTIND line
+  go
+  gtime=""
+  while getopts d:t line
+  do
+    case $line in
+    d) cd "$OPTARG";;
+    t) gtime="time";;
+    esac
+  done
+  shift $(($OPTIND - 1))
+  echo $@
+  $gtime $@
+}
+
+function rdo()
+{
+  local OPTIND line
+  go
+  gdir=""
+  gtime=""
+  while getopts d:t line
+  do
+    case $line in
+    d) gdir="$OPTARG";;
+    t) gtime="time";;
+    esac
+  done
+  shift $(($OPTIND - 1))
+
+  remote=$1; shift
+  echo "ssh $remote \"cd $(getdir $gdir) && $@\""
+  echo
+  $gtime ssh $remote "cd $(getdir $gdir) && $@"
+}
+
+#Common header
+mustbeinsandbox
+
+if [ -z "$SPECIAL_CASE" ]
+then
+  ggetargs $@
+  shift $SHIFT
+  ARCH=$1
+  shift
+  asetarch $ARCH
+fi
+

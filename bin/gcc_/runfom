@@ -1,0 +1,31 @@
+#!/bin/bash
+
+set -e
+
+source ~/bin/acommon
+
+BENCHMARK_DIR=/work/alahay01/shoji-benchmarking
+BUILD_DIR=$BENCHMARK_DIR/compiler_builds/gcc/shoji-enabled
+
+
+rm $BUILD_DIR
+ln -s $(getdir)/build-$ARCH$BUILD_EXTRA $BUILD_DIR
+
+cd $BENCHMARK_DIR
+source shoji-analysis-virtualenv/bin/activate
+
+
+export RUNNAME=$(basename $SANDBOX)-$(date +%Y-%m-%d-%H:%M:%S)
+#export CPU_COUNT=$(python -c "import multiprocessing; print(multiprocessing.cpu_count())")
+export CPU_COUNT=25
+
+
+cd experiments/gcc/shoji_vec
+make-benches --sel=hpc_ --config mdc_gcc_shoji_vec --job-limit=$CPU_COUNT build/$RUNNAME
+make-experiment --sel=hpc_ --job-limit=$CPU_COUNT --config=aem_alp3_1_vec256_local --benches=build/$RUNNAME run/$RUNNAME
+run-experiment run/$RUNNAME
+check-experiment run/$RUNNAME
+
+figure-of-merit-run-json $RUNNAME
+figure-of-merit $RUNNAME.json $RUNNAME
+

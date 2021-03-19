@@ -1,0 +1,20 @@
+#!/bin/bash
+
+usage()
+{
+  echo "$0 git-heads"
+  exit 2
+}
+
+test $# -eq 0 && usage
+PATCHES=$1
+
+for patch in $(git format-patch $@)
+do
+  echo
+  echo $patch
+  check_GNU_style.sh $patch
+  echo
+  mklog $patch
+  rm $patch
+done

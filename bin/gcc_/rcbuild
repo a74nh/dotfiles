@@ -1,0 +1,13 @@
+#!/bin/bash
+
+sub_usage()
+{
+  echo "$@ stage"
+}
+
+ARGS=$@
+ARGS=${ARGS%^M}
+
+source ~/bin/acommon
+
+rdo $REMOTE_MACHINE SANDBOX=$SANDBOX /home/alahay01/bin/cbuild3 $ARGS

@@ -1,0 +1,41 @@
+#!/bin/zsh
+set -e
+
+sub_usage()
+{
+  echo "$@ stage"
+}
+
+source $(dirname $0)/jcommon
+mustbeinsandbox
+ggetargs $@
+shift $SHIFT
+ARCH=$1
+shift
+asetarch $ARCH $REMOTE_MACHINE
+
+time {
+
+case $1 in
+
+  clean)
+  CONFIGURE=""
+  ado mkdir -p $BUILDDIR
+  ado -d $BUILDDIR rm -fr '*'
+  # export JAVA_HOME=$JAVA_HOME
+  ado -d $BUILDDIR bash ../../configure --with-debug-level=$BUILDTYPE --with-jvm-variants=server --with-native-debug-symbols=internal $EXTRA_CONFIG_FLAGS
+  #--with-jtreg=../../../gerrit_jtreg/build/images/jtreg
+  ;& # Fall through
+
+  "")
+  if [[ $? -eq 0 ]]; then ado -d $BUILDDIR make images JOBS=$MAX_LOAD LOG=debug; fi
+  ado -d $BUILDDIR ln -sf $SANDBOX/../jdk_utils/hsdis/build/linux-aarch64/hsdis-aarch64.so jdk/lib/
+  ;;
+
+  *) echo Unknown arg $1
+     exit 2
+  ;;
+
+esac
+
+}

@@ -1,0 +1,44 @@
+#!/bin/bash
+
+IN_DIR=~/Pictures/poster/
+OUT_DIR=~/Pictures/poster/tiles
+DIRS=3
+TILES_IN_IMAGE=2
+
+###############################################################################
+# Find images
+
+cd $IN_DIR
+
+files=($(ls -1 *.jp*g | while IFS= read -r line
+do
+    printf "%06d %s\n" $RANDOM "$line"
+done | sort -n | cut -c8-))
+
+###############################################################################
+# 
+
+size=${#files[@]}
+echo "images=$size"
+
+TILES=$(($size/($DIRS*$TILES_IN_IMAGE)))
+echo "tiles=$TILES"
+
+count=0
+for dirnum in $(seq 0 $((DIRS-1)))
+do
+  newdir=${OUT_DIR}_${dirnum}
+  rm -fr $newdir
+  mkdir $newdir
+  for x in $(seq 0 $((TILES-1)))
+  do
+    selected_files=
+    for y in $(seq 0 $((TILES_IN_IMAGE-1)))
+    do
+      selected_files="$selected_files ${files[$count]}"
+      count=$((count+1))
+    done
+    echo montage -tile ${TILES_IN_IMAGE}x1 -geometry x1440+100+0 -background black $selected_files ${newdir}/tile_$x.jpg
+    montage -tile ${TILES_IN_IMAGE}x1 -geometry x1440+100+0 -background black $selected_files ${newdir}/tile_$x.jpg
+  done
+done

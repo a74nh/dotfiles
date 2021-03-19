@@ -1,0 +1,3 @@
+#!/bin/bash
+for file in $(ls *.log); do echo $file; egrep "^FAIL" $file > ${file/.log/.fail}; egrep "^PASS" $file > ${file/.log/.pass}; done
+

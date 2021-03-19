@@ -1,0 +1,23 @@
+#!/bin/bash
+
+sub_usage()
+{
+  echo "$@ stage"
+}
+
+source ~/bin/acommon
+
+ARGS=$@
+ARGS=${ARGS%^M}
+
+if [ -n ]
+
+ado ./build-me.sh --target=$ARCH $WITH_FLAGS $AFTER_DASH_FLAGS $ARGS
+
+
+#ado ./oban-scripts/build-elf.sh \
+#  --target=$ARCH \
+#  --builddir=$SANDBOX/build-$ARCH \
+#  --srcdir=$SANDBOX/src \
+#  $ARGS
+

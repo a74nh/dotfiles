@@ -1,0 +1,188 @@
+#!/bin/bash
+
+PROG=$(basename $0)
+PROGDIR=$(dirname $0)
+PATH=$PROGDIR:$PATH
+
+source $PROGDIR/jcommon_funcs
+ 
+#This sucks
+# REMOTE_MACHINE=a18
+
+MAX_LOAD=shift
+if [ -f /proc/cpuinfo ]
+then
+  MAX_LOAD="$(grep -c ^processor /proc/cpuinfo)"
+fi
+
+function mustbeinsandbox()
+{
+  if [[ -z "$SANDBOX" ]]
+  then
+    echo Error: not in sandbox
+    exit 2
+  fi
+}
+
+function usage()
+{
+  echo "Usage:"
+  echo "  $PROG arch [ -m machine ]"
+
+  sub_usage "  $PROG arch [ s ]"
+  exit 2
+}
+
+function ggetargs()
+{
+  SEARCH_ARG=$1
+  SHIFT=0
+
+  case $SEARCH_ARG in
+
+  "-m") REMOTE_MACHINE=$2
+	    SHIFT=2
+        ;;
+
+  \?) usage;;
+
+  esac
+}
+
+function asetarch()
+{
+  DIRCODE=$1
+  local MACHINE=$2
+  EXTRA_CONFIG_FLAGS=
+  BUILDSUBTYPE=
+
+  case $DIRCODE in
+
+  ar)
+    ARCH=aarch64
+    BUILDTYPE=release
+    ;;
+
+  ad)
+    ARCH=aarch64
+    BUILDTYPE=slowdebug
+    ;;
+
+  af)
+    ARCH=aarch64
+    BUILDTYPE=fastdebug
+    ;;
+
+  adp)
+    ARCH=aarch64
+    BUILDTYPE=slowdebug
+    BUILDSUBTYPE=pac
+    EXTRA_CONFIG_FLAGS="--with-extra-cflags=\\\'-mbranch-protection=standard -march=armv8.3-a\\\' --with-extra-cxxflags=\\\'-mbranch-protection=standard -march=armv8.3-a\\\'"
+    export CC=gcc-10
+    export CXX=g++-10
+    ;;
+
+  arp)
+    ARCH=aarch64
+    BUILDTYPE=release
+    BUILDSUBTYPE=pac
+    EXTRA_CONFIG_FLAGS="--with-extra-cflags='-mbranch-protection=standard -march=armv8.3-a' --with-extra-cxxflags='-mbranch-protection=standard -march=armv8.3-a'"
+    export CC=gcc-10
+    export CXX=g++-10
+    ;;
+
+  xr)
+    ARCH=x86_64
+    BUILDTYPE=release
+    ;;
+
+  xd)
+    ARCH=x86_64
+    BUILDTYPE=slowdebug
+    ;;
+
+  *) echo "ERROR: unknown build type $DIRCODE"
+     exit 2;;
+
+  esac
+
+  #Gah, MACHINE is only set on remote script
+  case $MACHINE in
+
+  m8)
+    ARCH=x86
+    JAVA_HOME=/usr/lib/jvm/java-15-oracle/
+    ;;
+
+  a18)
+    JAVA_HOME=/usr/java/jdk-12.0.1+12/
+    ;;
+
+  dog)
+    # JAVA_HOME=/usr/lib/jvm/jdk13/
+    # JAVA_HOME=/usr/lib/jvm/jdk-14.0.1+7/
+    JAVA_HOME=/usr/lib/jvm/jdk-15+36/
+    ;;
+
+  rx)
+    JAVA_HOME=/usr/lib/jvm/jdk-15+36
+    ;;
+
+  fedora)
+    JAVA_HOME=/usr/lib/jvm/jre-15-openjdk
+    ;;
+
+  ubuntu)
+    JAVA_HOME=/usr/lib/jvm/jdk-16+36
+    ;;
+
+  "");;
+
+  *) echo "ERROR: unknown machine: $MACHINE"
+     exit 2;;
+
+  esac
+
+  BUILDDIR="build/$ARCH-$BUILDTYPE$BUILDSUBTYPE"
+
+  #If HOST not set use target
+  HOST=${HOST:-$TARGET}
+}
+
+function ado()
+{
+  local OPTIND line
+  go
+  gtime=""
+  while getopts d:t line
+  do
+    case $line in
+    d) cd "$OPTARG";;
+    t) gtime="time";;
+    esac
+  done
+  shift $(($OPTIND - 1))
+  echo $@
+  $gtime $@
+}
+
+function rdo()
+{
+  local OPTIND line
+  go
+  gdir=""
+  gtime=""
+  while getopts d:t line
+  do
+    case $line in
+    d) gdir="$OPTARG";;
+    t) gtime="time";;
+    esac
+  done
+  shift $(($OPTIND - 1))
+
+  remote=$1; shift
+  echo "ssh $remote \"cd $(getdir $gdir) && $@\""
+  echo
+  $gtime ssh $remote "cd $(getdir $gdir) && $@"
+}

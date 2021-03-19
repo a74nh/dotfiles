@@ -1,0 +1,44 @@
+#!/bin/bash
+
+USAGE="Usage: $0 gcc|binutils patch"
+
+###############################################################################
+
+if [ $# -ne 2 ]
+then
+   echo $USAGE
+   exit 2
+fi
+
+REPO=$1
+PATCH=$2
+
+case $REPO in
+    gcc|binutils) ;;
+    *)
+        echo "Unknown repo $REPO"
+        echo $USAGE
+        exit 2
+        ;;
+esac
+
+if [ ! -f $PATCH ]
+then
+   echo "Cannot find $PATCH"
+   echo $USAGE
+   exit 2
+fi
+PATCHNAME=$(basename $PATCH)
+
+###############################################################################
+
+MACHINE=llvm-test@man-02
+
+scp $PATCH $MACHINE:/tmp/
+
+COMMAND="buildbot try --connect=ssh --host=localhost --jobdir=/var/buildbot-jobdir --builder=shoji-gcc-nightly --patchlevel=1 --codebases=shoji-gcc,shoji-binutils --vc=git --codebase-diff=shoji-$REPO=/tmp/$PATCHNAME"
+
+ssh $MACHINE $COMMAND
+
+
+

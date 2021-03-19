@@ -1,0 +1,146 @@
+#!/bin/bash
+
+
+###############################################################################
+
+NUMMOUNTS=0
+
+initmount()
+{
+  MOUNTSRC[$NUMMOUNTS]=$1
+  MOUNTDEST[$NUMMOUNTS]=$2
+  NUMMOUNTS=$((NUMMOUNTS+1))
+}
+
+# initmount man-08.manchester.arm.com:/work/alahay01 ~/man-08-work
+# initmount man-08.manchester.arm.com:/home/alahay01 ~/man-08-home
+# initmount skynet@man-01.manchester.arm.com:/home/skynet ~/man-01-skynet
+# initmount dsgci-3.euhpc.arm.com:/work/alahay01 ~/dsgci-3-work
+# initmount root@build13.manchester.arm.com:/root ~/build13-root
+# initmount si-b6-4.euhpc.arm.com:/home/alahay01 ~/si-b6-4-home
+# initmount aws:/home/ubuntu ~/aws-home
+# initmount ctx-man-01.manchester.arm.com:/home/alahay01 ~/ctx-man-01-home
+# initmount apm17@helicon.cambridge.arm.com:/home/apm17 ~/apm17-home
+# initmount skynet:/home/mdc-bbot ~/skynet-home
+# initmount taishan-3.on.arm.com:/home/alahay01 ~/taishan-3-home
+# initmount taishan-4.on.arm.com:/home/alahay01 ~/taishan-4-home
+# initmount taishan-4.on.arm.com:/work/alahay01 ~/taishan-4-work
+initmount a18:/home/alahay01 ~/a18-home
+initmount a18:/work/alahay01 ~/a18-work
+
+
+###############################################################################
+
+addmount()
+{
+  MOUNT=$1
+
+  mkdir ${MOUNTDEST[$MOUNT]} 2>/dev/null
+
+  sshfs ${MOUNTSRC[$MOUNT]} ${MOUNTDEST[$MOUNT]}
+  sleep 1
+}
+
+###############################################################################
+
+removemount()
+{
+  MOUNT=$1
+
+  if [[ -d "${MOUNTDEST[$MOUNT]}" ]]
+  then
+    umount ${MOUNTDEST[$MOUNT]} 2>/dev/null
+
+    if [ $? -eq 1 ]
+    then
+      diskutil unmount force ${MOUNTDEST[$MOUNT]} 2>/dev/null
+    fi
+
+    rmdir ${MOUNTDEST[$MOUNT]} 2>/dev/null
+  fi
+}
+
+###############################################################################
+#0 - mounted
+#1 - not mounted
+#2 - error
+checkmount()
+{
+  MOUNT=$1
+
+  if [[ 1 -eq $(mount | grep -c ${MOUNTDEST[$MOUNT]}) ]]
+  then
+
+    ls ${MOUNTDEST[$MOUNT]} &>/dev/null
+
+    if [[ 0 -eq $? ]]
+    then
+      MOUNTED[$MOUNT]="M"
+      return 0
+    else
+      MERROR="ls failure"
+      return 2
+    fi
+  else
+    MERROR="mount command failure"
+  fi
+
+  MOUNTED[$MOUNT]=""
+
+  return 1
+}
+
+###############################################################################
+
+for ((M=0; M<$NUMMOUNTS; M++))
+do
+  checkmount $M
+  if [ $? -eq 2 ]
+  then
+    echo "ERROR mount $M: $MERROR"
+    removemount $M
+  fi
+done
+
+M=
+while true
+do
+
+  for ((M=0; M<$NUMMOUNTS; M++))
+  do
+    printf "%d: (%1.1s)  %s\n" $(($M+1)) "${MOUNTED[$M]}" "$(basename ${MOUNTDEST[$M]})"
+  done
+
+  echo
+  echo "Enter mount to toggle, or any other character to exit:"
+  read M;
+
+  re='^[0-9]+$'
+  if ! [[ $M =~ $re ]]
+  then
+   exit 0
+  fi 
+
+  if [[ $M -lt 1 || $M -gt $NUMMOUNTS ]]
+  then
+    echo "Invalid entry. Enter a number from 1 to $NUMMOUNTS"
+    M=
+  else
+    M=$((M-1))
+
+    if [[ -z "${MOUNTED[$M]}" ]]
+    then
+      addmount $M
+      checkmount $M
+      if [ $? -ne 0 ]
+      then
+        echo "ERROR mount $M: $MERROR"
+      fi
+    else
+      removemount $M
+      checkmount $M
+    fi
+  fi
+
+done
+

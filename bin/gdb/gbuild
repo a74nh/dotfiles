@@ -1,0 +1,53 @@
+#!/bin/bash
+set -e
+
+sub_usage()
+{
+  echo "$@ stage"
+}
+
+source ~/bin/gdb/gcommon
+
+ARGS=$@
+ARGS=${ARGS%^M}
+
+if [ -n "$TARGET" ]
+then
+  CONFIGURE_TARGET="--target=$TARGET --host=$HOST"
+fi
+
+if [ -n "$PATH_EXTRA" ]
+then
+  export PATH=$PATH_EXTRA:$PATH
+fi
+
+#--disable-binutils
+
+time {
+
+case $1 in
+
+  clean)
+  CONFIGURE=""
+  ado mkdir -p $BUILDDIR
+  ado mkdir -p $BUILDDIR/install
+  ado -d $BUILDDIR rm -fr '*'
+  #--disable-ld
+  ado -d $BUILDDIR ../src/binutils-gdb/configure --enable-sim --disable-gprof --disable-gold --disable-gas --prefix=$(getdir)$BUILDDIR/install $CONFIGURE_EXTRA $CONFIGURE_TARGET
+  ;& # Fall through
+
+  "") ado -d $BUILDDIR make $MAX_LOAD
+  if [[ $? -eq 0 ]]; then ado -d $BUILDDIR make $MAX_LOAD install; fi
+  ;;
+
+  doc) ado -d ${BUILDDIR}/gdb/doc make $MAX_LOAD all-doc
+  if [[ $? -eq 0 ]]; then ado -d ${BUILDDIR}/gdb/doc make $MAX_LOAD install; fi
+  ;;
+
+  *) echo Unknown arg $1
+     exit 2
+  ;;
+
+esac
+
+}
