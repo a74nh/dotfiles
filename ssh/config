@@ -4,9 +4,11 @@ Host *
   UseKeychain yes
   ForwardX11=yes
   ForwardX11Trusted=yes
+  AddKeysToAgent yes
+  IdentityFile ~/.ssh/id_rsa
 
-host man-0* *arm.com
-      IdentityFile ~/.ssh/id_rsa
+#host man-0* *arm.com
+#      IdentityFile ~/.ssh/id_rsa
 
 host hw-a20-18 hw-a20-19 hw-a21-13 hw-a21-14 hw-a21-16 hw-a21-17 hw-a21-18 hw-a21-17
       HostName %h.euhpc2.arm.com
@@ -107,10 +109,6 @@ Host gdbbbot
     IdentityFile ~/.ssh/packetbbot
     User gdb_buildbot
 
-Host testthis.ramanas.me.uk
-    IdentityFile ~/.ssh/packetbbot
-
-
 Host sve
     HostName man-08.manchester.arm.com
     Port 8022
@@ -162,3 +160,6 @@ Host fedora
 Host ubuntu
     Port 2222
     Hostname localhost
+
+Host gerrit.oss.arm.com
+    IdentityFile ~/.ssh/id_gerrit_oss
