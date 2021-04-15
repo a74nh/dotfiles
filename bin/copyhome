@@ -41,7 +41,7 @@ if [[ -n $NEW ]]; then
   remote rm -fr $DOTFILES
   remote git clone --recurse-submodules https://github.com/a74nh/dotfiles.git $DOTFILES
 else
-  remote "cd $DOTFILES; git pull"
+  remote "cd $DOTFILES; git reset --hard; git pull"
 fi
 
 remote "cd $DOTFILES; ./install"
