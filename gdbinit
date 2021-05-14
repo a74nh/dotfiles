@@ -31,7 +31,7 @@ define xxx
 end
 
 define jstack
-  call pns($sp, $fp, $pc)
+  call pns($sp, $r29, $pc)
 end
 
 # Run jdk, stopping at after global state has been initialised. Also prevents other threads running when stepping code.

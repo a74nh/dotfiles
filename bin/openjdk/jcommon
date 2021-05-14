@@ -136,6 +136,10 @@ function asetarch()
     JAVA_HOME=/usr/lib/jvm/jdk-16+36
     ;;
 
+  f)
+    JAVA_HOME=jre-16-openjdk
+    ;;
+
   "");;
 
   *) echo "ERROR: unknown machine: $MACHINE"

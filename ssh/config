@@ -149,11 +149,11 @@ Host *.shanghai.arm.com
 Host rx
     Hostname runtime-login-01.oss.arm.com
 
-Host fedorap
-    Port 8022
-    Hostname localhost
+#Host fedorap
+#    Port 8022
+#    Hostname localhost
 
-Host fedora
+Host fq
     Port 2223
     Hostname localhost
 
@@ -163,3 +163,7 @@ Host ubuntu
 
 Host gerrit.oss.arm.com
     IdentityFile ~/.ssh/id_gerrit_oss
+
+Host f
+    Port 2222
+    Hostname localhost

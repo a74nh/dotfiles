@@ -89,8 +89,8 @@ fi
 export ARMLMD_LICENSE_FILE=7010@euhpc-lic03.euhpc.arm.com
 
 
-alias jgdb='gdb -ex jdk_start --args java'
-alias jgdbx='gdb -ex jdk_run_to_exit --args java'
+alias jgdb='gdb -ex jdk_start --args'
+alias jgdbx='gdb -ex jdk_run_to_exit --args'
 
 alias ggdb='mx --vmprefix="gdb -ex jdk_start --args" vm'
 
