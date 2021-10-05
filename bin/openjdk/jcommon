@@ -137,7 +137,7 @@ function asetarch()
     ;;
 
   f)
-    JAVA_HOME=jre-16-openjdk
+    JAVA_HOME=/usr/lib/jvm/java-16-openjdk
     ;;
 
   "");;

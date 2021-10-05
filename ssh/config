@@ -164,6 +164,13 @@ Host ubuntu
 Host gerrit.oss.arm.com
     IdentityFile ~/.ssh/id_gerrit_oss
 
+Host eu-gerrit-1.euhpc.arm.com
+    IdentityFile ~/.ssh/id_dsg_gerrit_rsa
+
 Host f
     Port 2222
     Hostname localhost
+
+Host cr.openjdk.java.net
+    User ahayward
+    IdentityFile ~/.ssh/openjdk_rsa

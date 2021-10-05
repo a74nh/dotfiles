@@ -55,6 +55,7 @@ USAGE="getdir [-d area] [-h] args(s)";
 ### jdk h           src/hotspot/share
 ### jdk i           src/hotspot/share/interpreter
 ### jdk a           src/hotspot/cpu/aarch64
+### jdk la          src/hotspot/os_cpu/linux_aarch64
 ### jdk c1          src/hotspot/share/c1
 ### jdk c2          src/hotspot/share/opto
 ### jdk rt          build/aarch64-release/test-results
