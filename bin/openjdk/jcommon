@@ -122,6 +122,7 @@ function asetarch()
     # JAVA_HOME=/usr/lib/jvm/jdk13/
     # JAVA_HOME=/usr/lib/jvm/jdk-14.0.1+7/
     JAVA_HOME=/usr/lib/jvm/jdk-15+36/
+    EXTRA_CONFIG_FLAGS="--with-jtreg=../../../gerrit_jtreg/build/images/jtreg"
     ;;
 
   rx)
