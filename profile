@@ -29,7 +29,8 @@ esac
 #fi
 
 # Try to switch to zsh
-if [ -f "/bin/zsh" ]; then
+if [[ "$SHELL" != "/bin/zsh" && -f "/bin/zsh" ]]; then
+  export SHELL=/bin/zsh
   /bin/zsh
   exit
 else
