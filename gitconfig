@@ -25,3 +25,8 @@
 [core]
 	excludesfile = /Users/alahay01/.gitignore_global
 	hooksPath = /Users/alahay01/graal/ci-scripts/helper/githooks
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
