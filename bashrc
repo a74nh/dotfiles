@@ -107,3 +107,4 @@ source ~/graal/ci-scripts/helper/envsetup.sh
 
 
 
+. "$HOME/.cargo/env"

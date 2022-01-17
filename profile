@@ -44,3 +44,4 @@ else
   fi
 
 fi
+. "$HOME/.cargo/env"

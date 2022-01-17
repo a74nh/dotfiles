@@ -73,6 +73,13 @@ function asetarch()
     BUILDTYPE=fastdebug
     ;;
 
+  afp)
+    ARCH=aarch64
+    BUILDTYPE=fastdebug
+    BUILDSUBTYPE="-pac"
+    EXTRA_CONFIG_FLAGS="--enable-branch-protection"
+    ;;
+
   adp)
     ARCH=aarch64
     BUILDTYPE=slowdebug
