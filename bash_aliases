@@ -20,6 +20,9 @@ alias sj='search -j'
 alias e='subl'
 export EDITOR=vim
 
+alias v="code -g"
+alias vn="code -n -g"
+
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
     alias ls='ls --color=auto'
@@ -68,6 +71,7 @@ fi
 
 path_add $HOME/bin
 path_add $HOME/graal/mx $HOME/graal/rcvm_scripts/ $HOME/bin/graal $HOME/bin/openjdk
+path_add $HOME/.dotnet/tools
 
 
 export JT_HOME=/home/ent-user/jtreg/jtreg-hg/build/images/jtreg

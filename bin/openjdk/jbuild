@@ -13,18 +13,32 @@ shift $SHIFT
 ARCH=$1
 shift
 asetarch $ARCH $REMOTE_MACHINE
+DOJMH=
+
+
+doclean()
+{
+  CONFIGURE=""
+  ado mkdir -p $BUILDDIR
+  ado -d $BUILDDIR rm -fr '*'
+  # export JAVA_HOME=$JAVA_HOME
+  ado -d $BUILDDIR bash ../../configure --with-debug-level=$BUILDTYPE --with-jvm-variants=server --with-native-debug-symbols=internal ${EXTRA_CONFIG_FLAGS[@]} --with-jtreg=../../../gerrit_jtreg/build/images/jtreg  
+}
+
 
 time {
 
 case $1 in
 
+  cleanjmh)
+  # This sucks
+  ado sh make/devkit/createJMHBundle.sh
+  EXTRA_CONFIG_FLAGS=($EXTRA_CONFIG_FLAGS "--with-jmh=../jmh/jars")
+  doclean
+  ;& # Fall through
+
   clean)
-  CONFIGURE=""
-  ado mkdir -p $BUILDDIR
-  ado -d $BUILDDIR rm -fr '*'
-  # export JAVA_HOME=$JAVA_HOME
-  ado -d $BUILDDIR bash ../../configure --with-debug-level=$BUILDTYPE --with-jvm-variants=server --with-native-debug-symbols=internal $EXTRA_CONFIG_FLAGS
-  #--with-jtreg=../../../gerrit_jtreg/build/images/jtreg
+  doclean
   ;& # Fall through
 
   "")

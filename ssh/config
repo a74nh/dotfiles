@@ -55,6 +55,9 @@ host a18
 host a16
       Hostname hw-a21-16.euhpc2.arm.com
 
+host a4
+      Hostname oss-altra04.oss.cambridge.arm.com
+
 Host pdsw-git
       HostName pdsw-git.cambridge.arm.com
       ForwardX11=yes

@@ -77,14 +77,14 @@ function asetarch()
     ARCH=aarch64
     BUILDTYPE=fastdebug
     BUILDSUBTYPE="-pac"
-    EXTRA_CONFIG_FLAGS="--enable-branch-protection"
+    EXTRA_CONFIG_FLAGS=(--enable-branch-protection)
     ;;
 
   adp)
     ARCH=aarch64
     BUILDTYPE=slowdebug
     BUILDSUBTYPE=pac
-    EXTRA_CONFIG_FLAGS="--with-extra-cflags=\\\'-mbranch-protection=standard -march=armv8.3-a\\\' --with-extra-cxxflags=\\\'-mbranch-protection=standard -march=armv8.3-a\\\'"
+    EXTRA_CONFIG_FLAGS=(--with-extra-cflags=\\\'-mbranch-protection=standard -march=armv8.3-a\\\' --with-extra-cxxflags=\\\'-mbranch-protection=standard -march=armv8.3-a\\\')
     export CC=gcc-10
     export CXX=g++-10
     ;;
@@ -93,7 +93,7 @@ function asetarch()
     ARCH=aarch64
     BUILDTYPE=release
     BUILDSUBTYPE=pac
-    EXTRA_CONFIG_FLAGS="--with-extra-cflags='-mbranch-protection=standard -march=armv8.3-a' --with-extra-cxxflags='-mbranch-protection=standard -march=armv8.3-a'"
+    EXTRA_CONFIG_FLAGS=(--with-extra-cflags='-mbranch-protection=standard -march=armv8.3-a' --with-extra-cxxflags='-mbranch-protection=standard -march=armv8.3-a')
     export CC=gcc-10
     export CXX=g++-10
     ;;
@@ -130,7 +130,7 @@ function asetarch()
     # JAVA_HOME=/usr/lib/jvm/jdk-14.0.1+7/
     # JAVA_HOME=/usr/lib/jvm/jdk-15+36/
     JAVA_HOME=/usr/lib/jvm/jdk-17.0.1/
-    EXTRA_CONFIG_FLAGS="--with-jtreg=../../../gerrit_jtreg/build/images/jtreg"
+    EXTRA_CONFIG_FLAGS=(--with-jtreg=../../../gerrit_jtreg/build/images/jtreg)
     ;;
 
   rx)
@@ -147,6 +147,7 @@ function asetarch()
 
   f)
     JAVA_HOME=/usr/lib/jvm/java-16-openjdk
+    EXTRA_CONFIG_FLAGS=(--with-jtreg=../../../gerrit_jtreg/build/images/jtreg)
     ;;
 
   "");;
