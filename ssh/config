@@ -134,7 +134,8 @@ Host farm7
     IdentityFile ~/.ssh/id_rsa
 
 Host dog
-    Hostname oss-d0509.lab.cambridge.arm.com
+    #Hostname oss-d0509.lab.cambridge.arm.com
+    Hostname 10.7.15.228
 
 Host github.com
     User git
@@ -177,3 +178,6 @@ Host f
 Host cr.openjdk.java.net
     User ahayward
     IdentityFile ~/.ssh/openjdk_rsa
+
+Host adam
+    Hostname e126464.manchester.arm.com

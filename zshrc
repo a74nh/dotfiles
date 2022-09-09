@@ -132,4 +132,4 @@ bindkey "[C" forward-word
 bindkey "^[a" beginning-of-line
 bindkey "^[e" end-of-line
 
-export BASH_ENV=~/graal/ci-scripts/helper/envsetup.sh
+export BASH_ENV=~/dotnet/ci-scripts/helper/envsetup.sh

@@ -103,7 +103,7 @@ fi
 if [[ -n "$HOMEBREW_PREFIX" ]]; then
   path_add $HOMEBREW_PREFIX/Cellar/gnu-sed/4.8/libexec/gnubin $HOMEBREW_PREFIX/Cellar/coreutils/8.32/libexec/gnubin/
 fi
-source ~/graal/ci-scripts/helper/envsetup.sh
+source ~/dotnet/ci-scripts/helper/envsetup.sh
 
 
 
