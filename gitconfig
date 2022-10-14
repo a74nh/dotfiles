@@ -2,7 +2,8 @@
 	email = alan.hayward@arm.com
 	name = Alan Hayward
 [diff]
-	tool = diffmerge
+	tool = meld
+	#tool = diffmerge
 	prompt = false
 [difftool]
 	prompt = false
@@ -24,7 +25,7 @@
 	default = upstream
 [core]
 	excludesfile = /Users/alahay01/.gitignore_global
-	hooksPath = /Users/alahay01/graal/ci-scripts/helper/githooks
+	hooksPath = /Users/alahay01/dotnet/ci-scripts/helper/githooks
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f

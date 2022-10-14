@@ -19,6 +19,7 @@ alias si='search -i'
 alias sj='search -j'
 alias e='subl'
 export EDITOR=vim
+alias cdg='cd $(git rev-parse --show-toplevel)'
 
 alias v="code -g"
 alias vn="code -n -g"
