@@ -71,7 +71,7 @@ if [[ -n "$HOMEBREW_PREFIX" ]]; then
 fi
 
 path_add $HOME/bin
-path_add $HOME/graal/mx $HOME/graal/rcvm_scripts/ $HOME/bin/graal $HOME/bin/openjdk
+path_add $HOME/graal/mx $HOME/dotnet/rcvm_scripts/ $HOME/bin/graal $HOME/bin/openjdk
 path_add $HOME/.dotnet/tools
 
 

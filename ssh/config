@@ -6,6 +6,7 @@ Host *
   ForwardX11Trusted=yes
   AddKeysToAgent yes
   IdentityFile ~/.ssh/id_rsa
+  PubkeyAcceptedKeyTypes +ssh-rsa
 
 #host man-0* *arm.com
 #      IdentityFile ~/.ssh/id_rsa
@@ -134,8 +135,11 @@ Host farm7
     IdentityFile ~/.ssh/id_rsa
 
 Host dog
-    #Hostname oss-d0509.lab.cambridge.arm.com
-    Hostname 10.7.15.228
+    Hostname oss-d0509.oss.cambridge.arm.com
+    #Hostname 10.7.15.228
+
+Host do8
+    Hostname oss-d0508.oss.cambridge.arm.com
 
 Host github.com
     User git
