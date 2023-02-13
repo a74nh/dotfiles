@@ -185,3 +185,6 @@ Host cr.openjdk.java.net
 
 Host adam
     Hostname e126464.manchester.arm.com
+
+Host avm
+    Hostname oss-arm64-runtimes.lab.cambridge.arm.com
