@@ -188,3 +188,12 @@ Host adam
 
 Host avm
     Hostname oss-arm64-runtimes.lab.cambridge.arm.com
+
+Host a641
+    hostname a64fx-man-01.manchester.arm.com
+
+Host g3
+    hostname 10.252.156.43
+
+Host me
+    hostname alahay01-01-arm-vm.lab.cambridge.arm.com

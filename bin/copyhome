@@ -1,15 +1,17 @@
 #!/bin/bash
 set -e
 
-USAGE="$0 [-p port] [-n] <remotemachine>"
+USAGE="$0 [-p port] [-n] [-f] <remotemachine>"
 PORT=
 NEW=
+FROM=
 
-while getopts np: line
+while getopts np:f line
 do
      case $line in
      n) NEW=1;;
      p) PORT="-P $OPTARG";;
+     f) FROM=1;;
      *) echo $USAGE; exit 2;;
      esac
 done
@@ -20,8 +22,11 @@ REMOTEMACHINE=${1:?$USAGE}
 SCPSTUFF=(.ssh)
 cd
 echo ${SCPSTUFF[@]}
-scp -rq $PORT ${SCPSTUFF[@]} $REMOTEMACHINE:
-
+if [[ -n "$FROM" ]]; then
+  scp -rq $PORT $REMOTEMACHINE:${SCPSTUFF[@]} $HOME/
+else
+  scp -rq $PORT ${SCPSTUFF[@]} $REMOTEMACHINE:
+fi
 
 # RSYNCSTUFF=(bin)
 # for f in ${RSYNCSTUFF[@]}
@@ -33,7 +38,11 @@ scp -rq $PORT ${SCPSTUFF[@]} $REMOTEMACHINE:
 remote()
 {
   echo $@
-  ssh $REMOTEMACHINE $@
+  if [[ -n "$FROM" ]]; then
+    "$@"
+  else
+    ssh $REMOTEMACHINE $@
+  fi
 }
 
 DOTFILES=.dotfiles
